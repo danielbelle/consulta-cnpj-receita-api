@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Documentação do Projeto - Consulta de CNPJ na Receita Federal
 
-## Getting Started
+## 📋 Visão Geral
 
-First, run the development server:
+API para consulta de CNPJs com integração aos dados da Receita Federal,
+desenvolvida em Next.js, Node.js e Tailwind CSS, com deploy gratuito.
+
+## 🛠 Tecnologias Utilizadas
+
+- **Frontend**: Next.js, Tailwind CSS, React Query
+- **Backend**: Next.js API Routes, Node.js
+- **Banco de Dados**: (Definir)
+- **Cache**: Redis (Upstash)
+- **Validação**: Zod
+- **Deploy**: Vercel (frontend e API), Backend (Definir)
+
+## 🚀 Passo a Passo para Implementação
+
+### 1. Configuração Inicial do Projeto
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Criar projeto Next.js
+npx create-next-app@latest cnpj-consulta
+
+# Instalar dependências principais
+cd cnpj-consulta
+npm install axios cheerio @upstash/redis swr zod
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Estrutura de Arquivos
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```
+/src
+├── /components
+│   ├── /ui (componentes reutilizáveis)
+│   ├── ConsultaForm.tsx
+│   └── ResultadoView.tsx
+├── /pages
+│   ├── /api
+│   │   ├── consulta.ts
+│   │   └── historico.ts
+│   ├── index.tsx (página principal)
+│   └── _app.tsx
+├── /lib
+│   ├── receita-service.ts
+│   └── redis-client.ts
+├── /styles
+│   └── globals.css
+└── /types
+    └── cnpj.d.ts
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Implementação do Backend
 
-## Learn More
+#### 3.1. Configurar cliente Redis
 
-To learn more about Next.js, take a look at the following resources:
+#### 3.2. Criar endpoint de consulta
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4. Implementação do Frontend
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+#### 4.1. Página principal
 
-## Deploy on Vercel
+### 5. Configuração para Deploy
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+#### 5.1. Variáveis de ambiente
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```env
+# .env
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+RECEITA_FEDERAL_API_KEY=
+```
+
+#### 5.2. Configuração do Vercel
+
+1. Criar conta na Vercel
+2. Conectar repositório Git
+3. Adicionar variáveis de ambiente no painel
+4. Configurar como projeto Next.js
+
+### 6. Funcionalidades Adicionais (Roadmap)
+
+| Prioridade | Feature                | Descrição                          |
+| ---------- | ---------------------- | ---------------------------------- |
+| P1         | Histórico de consultas | Salvar consultas recentes          |
+| P1         | Validação de CNPJ      | Validar formato antes de consultar |
+| P2         | Autenticação           | Salvar histórico por usuário       |
+| P2         | Exportar PDF           | Gerar relatório em PDF             |
+| P3         | API pública            | Oferecer endpoint para devs        |
+
+## 📌 Considerações Importantes
+
+1. **Legalidade**: Verificar os termos de serviço da Receita Federal
+2. **Rate Limiting**: Implementar limite de consultas por usuário
+3. **Cache**: Utilizar Redis para reduzir requisições à fonte
+4. **LGPD**: Não armazenar dados sensíveis sem necessidade
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Consulte o arquivo LICENSE para mais
+detalhes.
