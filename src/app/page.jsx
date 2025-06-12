@@ -1,7 +1,7 @@
 import React from "react";
-import ConsultaForm from "@/app/pages/ConsultaForm";
-import ResultadoView from "@/app/pages/ResultadoView";
-import TextoLandingPage from "./pages/components/TextoLandingPage";
+import ConsultaForm from "@/app/forms/ConsultaForm";
+import ResultadoView from "@/app/results/ResultadoView";
+import TextoLandingPage from "./landing/TextoLandingPage";
 
 export default function Home() {
   // Condição que nunca será verdadeira

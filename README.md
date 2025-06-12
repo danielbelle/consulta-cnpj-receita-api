@@ -40,9 +40,6 @@ consulta-receita/
 │       │   ├── ui/                # Componentes reutilizáveis (botões, inputs, etc)
 │       │   ├── ConsultaForm.jsx   # Formulário para digitar o CNPJ
 │       │   └── ResultadoView.jsx  # Exibição dos dados retornados
-│       ├── lib/
-│       │   ├── receita-service.js # Funções para buscar e tratar dados da Receita
-│       │   └── redis-client.js    # Cliente para conexão com Redis
 │       ├── pages/
 │       │   └── api/
 │       │       ├── consulta.js    # Endpoint para consultar CNPJ
