@@ -9,10 +9,10 @@ desenvolvida em Next.js, Node.js e Tailwind CSS, com deploy gratuito.
 
 - **Frontend**: Next.js, Tailwind CSS, React Query
 - **Backend**: Next.js API Routes, Node.js
-- **Banco de Dados**: (Definir)
+- **Banco de Dados**: \_database(definir)
 - **Cache**: Redis (Upstash)
 - **Validação**: Zod
-- **Deploy**: Vercel (frontend e API), Backend (Definir)
+- **Deploy**: Vercel (frontend e API), \_definir (backend)
 
 ## 🚀 Passo a Passo para Implementação
 
@@ -32,24 +32,36 @@ npx tailwindcss init
 ### 2. Estrutura de Arquivos
 
 ```
-/src
-├── /components
-│   ├── /ui (componentes reutilizáveis)
-│   ├── ConsultaForm.tsx
-│   └── ResultadoView.tsx
-├── /pages
-│   ├── /api
-│   │   ├── consulta.ts
-│   │   └── historico.ts
-│   ├── index.tsx (página principal)
-│   └── _app.tsx
-├── /lib
-│   ├── receita-service.ts
-│   └── redis-client.ts
-├── /styles
-│   └── globals.css
-└── /types
-    └── cnpj.d.ts
+consulta-receita/
+├── public/
+├── src/
+│   └── app/
+│       ├── components/
+│       │   ├── ui/                # Componentes reutilizáveis (botões, inputs, etc)
+│       │   ├── ConsultaForm.jsx   # Formulário para digitar o CNPJ
+│       │   └── ResultadoView.jsx  # Exibição dos dados retornados
+│       ├── lib/
+│       │   ├── receita-service.js # Funções para buscar e tratar dados da Receita
+│       │   └── redis-client.js    # Cliente para conexão com Redis
+│       ├── pages/
+│       │   └── api/
+│       │       ├── consulta.js    # Endpoint para consultar CNPJ
+│       │       └── historico.js   # Endpoint para histórico de consultas
+│       ├── types/
+│       │    └── cnpj.js            # Validação
+│       │
+│       ├── favicon.ico
+│       ├── globals.css
+│       ├── layout.js
+│       └── page.js
+├── .env
+├── .gitignore
+├── jsconfig.json
+├── next.config.mjs
+├── package.json
+├── postcss.config.mjs
+├── README.md
+└── eslint.config.mjs
 ```
 
 ### 3. Implementação do Backend
