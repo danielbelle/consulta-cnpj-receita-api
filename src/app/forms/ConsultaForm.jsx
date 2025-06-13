@@ -51,14 +51,13 @@ const ConsultaForm = () => {
 
   const form = useConsultaForm();
 
-  const siteKey =
-    process.env.NODE_ENV === "development"
-      ? process.env.NEXT_PUBLIC_SITE_KEY
-      : process.env.SITE_KEY;
-
   return (
     <>
-      <ReCAPTCHA sitekey={siteKey} size="invisible" ref={recaptchaRef} />
+      <ReCAPTCHA
+        sitekey={process.env.NEXT_PUBLIC_SITE_KEY}
+        size="invisible"
+        ref={recaptchaRef}
+      />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="mt-12 flex items-center justify-center gap-4">
