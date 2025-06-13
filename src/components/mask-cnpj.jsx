@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 
-export default function MaskCnpj({ value, onChange }) {
+export default function MaskCnpj({ id, name, value, onChange }) {
   // Função para aplicar a máscara de CNPJ
   function formatCNPJ(val) {
     return val
@@ -14,6 +14,8 @@ export default function MaskCnpj({ value, onChange }) {
 
   return (
     <Input
+      id={id}
+      name={name}
       type="text"
       placeholder="CNPJ"
       maxLength={18}

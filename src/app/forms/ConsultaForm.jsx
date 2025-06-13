@@ -68,7 +68,12 @@ const ConsultaForm = () => {
               render={({ field }) => (
                 <FormItem className="w-full max-w-lg flex items-center gap-2">
                   <FormControl>
-                    <MaskCnpj value={field.value} onChange={field.onChange} />
+                    <MaskCnpj
+                      id={field.name}
+                      name={field.name}
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
                   </FormControl>
                   <Button
                     type="submit"
