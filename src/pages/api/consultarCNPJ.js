@@ -53,8 +53,18 @@ export default async function handler(req, res) {
   const captchaRes = await fetch(verifyUrl, { method: "POST" });
   const captchaData = await captchaRes.json();
 
+  const invalidCaptchaKey = `captcha:invalid:${ip}`;
+  const invalidAttempts = parseInt(await redis.get(invalidCaptchaKey) || "0", 10);
+  if (invalidAttempts >= 5) {
+    return res.status(429).json({ error: "Muitas tentativas de captcha inválido. Tente novamente mais tarde." });
+  }
+
   if (!captchaData.success) {
+    await redis.incr(invalidCaptchaKey);
+    await redis.expire(invalidCaptchaKey, 600);
     return res.status(400).json({ error: "Falha na validação do captcha" });
+  } else {
+    await redis.del(invalidCaptchaKey);
   }
 
   const cacheKey = `cnpj:${cnpj}`;
@@ -77,7 +87,7 @@ export default async function handler(req, res) {
   } catch (error) {
     return res.status(504).json({
       error: "Timeout ou erro ao consultar serviço externo",
-      details: error.message,
+      ...(process.env.NODE_ENV === "development" && { details: error.message }),
     });
   }
 }
