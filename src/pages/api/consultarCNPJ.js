@@ -3,6 +3,18 @@ import { cnpjSchema } from "@/app/types/cnpj";
 const { CnpjaOpen } = require("@cnpja/sdk");
 import runMiddleware, { cors } from "../../_middleware";
 
+function withTimeout(promise, ms = 5000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(
+        () => reject(new Error("Timeout na consulta ao serviço externo")),
+        ms
+      )
+    ),
+  ]);
+}
+
 export default async function handler(req, res) {
   await runMiddleware(req, res, cors);
 
@@ -46,20 +58,26 @@ export default async function handler(req, res) {
   }
 
   const cacheKey = `cnpj:${cnpj}`;
+  let cached = null;
   try {
-    const cached = await redis.get(cacheKey);
-    if (cached) return res.status(200).json(JSON.parse(cached));
+    cached = await redis.get(cacheKey);
+  } catch (err) {
+    console.error("Erro ao acessar Redis:", err);
+    // Continue sem cache, se necessário
+  }
+  if (cached) return res.status(200).json(JSON.parse(cached));
 
+  try {
     const cnpja = new CnpjaOpen();
-    const office = await cnpja.office.read({ taxId: cnpj });
+    const office = await withTimeout(cnpja.office.read({ taxId: cnpj }), 5000);
     if (!office) return res.status(404).json({ error: "CNPJ não encontrado" });
 
     await redis.set(cacheKey, JSON.stringify(office), "EX", 3600);
     return res.status(200).json(office);
   } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      console.error("Erro interno:", error);
-    }
-    return res.status(500).json({ error: "Erro interno ao consultar CNPJ" });
+    return res.status(504).json({
+      error: "Timeout ou erro ao consultar serviço externo",
+      details: error.message,
+    });
   }
 }
