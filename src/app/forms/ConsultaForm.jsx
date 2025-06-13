@@ -3,8 +3,6 @@
 import React, { useState, useRef } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ArrowUpRight } from "lucide-react";
 import {
   Form,
   FormField,
@@ -14,6 +12,7 @@ import {
 } from "@/components/ui/form";
 import { useConsultaForm } from "./useConsultaForm";
 import ResultadoView from "../results/ResultadoView";
+import MaskCnpj from "@/components/mask-cnpj"; // Importa o componente de máscara
 
 const ConsultaForm = () => {
   const recaptchaRef = useRef();
@@ -26,12 +25,14 @@ const ConsultaForm = () => {
     setErro(null);
     setResultado(null);
     try {
-      // Obtenha o token do reCAPTCHA
+      // Remove tudo que não for número do CNPJ antes de enviar
+      const cnpjNumerico = values.cnpj.replace(/[^\d]+/g, "");
+
       const token = await recaptchaRef.current.executeAsync();
       recaptchaRef.current.reset();
 
       const res = await fetch(
-        `/api/consultarCNPJ?cnpj=${encodeURIComponent(values.cnpj)}`,
+        `/api/consultarCNPJ?cnpj=${encodeURIComponent(cnpjNumerico)}`,
         {
           method: "GET",
           headers: {
@@ -67,12 +68,7 @@ const ConsultaForm = () => {
               render={({ field }) => (
                 <FormItem className="w-full max-w-lg flex items-center gap-2">
                   <FormControl>
-                    <Input
-                      {...field}
-                      className="rounded-full w-full border-2 border-gray-800 dark:border-gray-200 focus:border-gray-600 dark:focus:border-gray-400 focus:ring-0 bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-400"
-                      type="text"
-                      placeholder="CNPJ"
-                    />
+                    <MaskCnpj value={field.value} onChange={field.onChange} />
                   </FormControl>
                   <Button
                     type="submit"
@@ -80,7 +76,6 @@ const ConsultaForm = () => {
                     className="rounded-full cursor-pointer text-base bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200"
                   >
                     Pesquisar CNPJ
-                    <ArrowUpRight className="!h-5 !w-5" />
                   </Button>
                   <FormMessage />
                 </FormItem>
