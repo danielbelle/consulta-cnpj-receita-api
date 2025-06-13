@@ -1,7 +1,7 @@
 import redis from "@/lib/redis";
 import { cnpjSchema } from "@/app/types/cnpj";
 const { CnpjaOpen } = require("@cnpja/sdk");
-import runMiddleware from "./_middleware";
+import runMiddleware, { cors } from "../../_middleware";
 
 export default async function handler(req, res) {
   await runMiddleware(req, res, cors);

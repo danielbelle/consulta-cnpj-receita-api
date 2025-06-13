@@ -11,6 +11,8 @@ const cors = Cors({
   methods: ["GET"],
 });
 
+export { cors };
+
 export default function runMiddleware(req, res, fn) {
   return new Promise((resolve, reject) => {
     fn(req, res, (result) => {
