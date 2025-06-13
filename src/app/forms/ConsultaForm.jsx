@@ -15,8 +15,6 @@ import {
 import { useConsultaForm } from "./useConsultaForm";
 import ResultadoView from "../results/ResultadoView";
 
-const SITE_KEY = "SUA_SITE_KEY_AQUI"; // coloque sua chave do Google aqui
-
 const ConsultaForm = () => {
   const recaptchaRef = useRef();
   const [resultado, setResultado] = useState(null);
@@ -53,9 +51,14 @@ const ConsultaForm = () => {
 
   const form = useConsultaForm();
 
+  const siteKey =
+    process.env.NODE_ENV === "development"
+      ? process.env.NEXT_PUBLIC_SITE_KEY
+      : process.env.SITE_KEY;
+
   return (
     <>
-      <ReCAPTCHA sitekey={SITE_KEY} size="invisible" ref={recaptchaRef} />
+      <ReCAPTCHA sitekey={siteKey} size="invisible" ref={recaptchaRef} />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="mt-12 flex items-center justify-center gap-4">
