@@ -13,6 +13,8 @@ import {
 import { useConsultaForm } from "./useConsultaForm";
 import ResultadoView from "../results/ResultadoView";
 import MaskCnpj from "@/components/mask-cnpj"; // Importa o componente de máscara
+import { Controller } from "react-hook-form";
+import { useTheme } from "next-themes"; // Adicione esta linha
 
 const ConsultaForm = () => {
   const recaptchaRef = useRef();
@@ -20,16 +22,20 @@ const ConsultaForm = () => {
   const [erro, setErro] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const { resolvedTheme } = useTheme(); // Use resolvedTheme ao invés de theme
+
   const onSubmit = async (values) => {
     setLoading(true);
     setErro(null);
     setResultado(null);
-    try {
-      // Remove tudo que não for número do CNPJ antes de enviar
-      const cnpjNumerico = values.cnpj.replace(/[^\d]+/g, "");
 
+    // Não precisa mais validar manualmente o CNPJ aqui
+
+    try {
       const token = await recaptchaRef.current.executeAsync();
       recaptchaRef.current.reset();
+
+      const cnpjNumerico = values.cnpj.replace(/[^\d]+/g, "");
 
       const res = await fetch(
         `/api/consultarCNPJ?cnpj=${encodeURIComponent(cnpjNumerico)}`,
@@ -55,9 +61,12 @@ const ConsultaForm = () => {
   return (
     <>
       <ReCAPTCHA
+        key={resolvedTheme} // força remontagem ao trocar o tema ou system
         sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
         size="invisible"
         ref={recaptchaRef}
+        badge="bottomleft"
+        theme={resolvedTheme === "dark" ? "dark" : "light"} // Usa o tema resolvido
       />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -66,23 +75,34 @@ const ConsultaForm = () => {
               control={form.control}
               name="cnpj"
               render={({ field }) => (
-                <FormItem className="w-full max-w-lg flex items-center gap-2">
-                  <FormControl>
-                    <MaskCnpj
-                      id={field.name}
-                      name={field.name}
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  </FormControl>
-                  <Button
-                    type="submit"
-                    size="lg"
-                    className="rounded-full cursor-pointer text-base bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200"
-                  >
-                    Pesquisar CNPJ
-                  </Button>
-                  <FormMessage />
+                <FormItem className="w-full max-w-lg flex flex-col gap-2">
+                  <div className="flex flex-row items-center gap-2 w-full">
+                    <FormControl>
+                      <Controller
+                        name="cnpj"
+                        control={form.control}
+                        render={({ field }) => (
+                          <MaskCnpj
+                            {...field}
+                            value={field.value || ""}
+                            onChange={(e) => {
+                              field.onChange(e.target ? e.target.value : e);
+                            }}
+                          />
+                        )}
+                      />
+                    </FormControl>
+                    <Button
+                      type="submit"
+                      size="lg"
+                      className="rounded-full cursor-pointer text-base bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-200"
+                    >
+                      Pesquisar CNPJ
+                    </Button>
+                  </div>
+                  <div className="w-full">
+                    <FormMessage />
+                  </div>
                 </FormItem>
               )}
             />

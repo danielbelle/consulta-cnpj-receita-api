@@ -1,9 +1,7 @@
-import { z } from "zod";
-
 /**
  * Valida o CNPJ conforme o algoritmo oficial da Receita Federal.
  */
-function isValidCNPJ(cnpj) {
+export function isValidCNPJ(cnpj) {
   // CNPJ deve ter 14 dígitos
   if (cnpj.length !== 14) return false;
 
@@ -29,17 +27,6 @@ function isValidCNPJ(cnpj) {
 
   return dv1 === parseInt(cnpj[12], 10) && dv2 === parseInt(cnpj[13], 10);
 }
-
-// Esquema Zod para validação de CNPJ
-export const cnpjSchema = z
-  .string()
-  .transform((val) => val.replace(/[^\d]+/g, "")) // remove máscara antes de validar
-  .refine((val) => val.length === 14, {
-    message: "CNPJ deve ter 14 dígitos",
-  })
-  .refine(isValidCNPJ, {
-    message: "CNPJ inválido",
-  });
 
 /**
  * Observação:

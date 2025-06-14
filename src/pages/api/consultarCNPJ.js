@@ -1,5 +1,5 @@
 import redis from "@/lib/redis";
-import { cnpjSchema } from "@/app/types/cnpj";
+import { yupCnpjSchema } from "@/app/forms/yupCnpjSchema"; // Importa o schema Yup
 const { CnpjaOpen } = require("@cnpja/sdk");
 import runMiddleware, { cors } from "../../_middleware";
 
@@ -37,10 +37,12 @@ export default async function handler(req, res) {
   }
 
   const { cnpj } = req.query;
+
+  // Validação com Yup
   try {
-    cnpjSchema.parse(cnpj);
-  } catch {
-    return res.status(400).json({ error: "CNPJ inválido" });
+    await yupCnpjSchema.validate({ cnpj });
+  } catch (err) {
+    return res.status(400).json({ error: err.errors?.[0] || "CNPJ inválido" });
   }
 
   // Validação do reCAPTCHA
@@ -54,9 +56,15 @@ export default async function handler(req, res) {
   const captchaData = await captchaRes.json();
 
   const invalidCaptchaKey = `captcha:invalid:${ip}`;
-  const invalidAttempts = parseInt(await redis.get(invalidCaptchaKey) || "0", 10);
+  const invalidAttempts = parseInt(
+    (await redis.get(invalidCaptchaKey)) || "0",
+    10
+  );
   if (invalidAttempts >= 5) {
-    return res.status(429).json({ error: "Muitas tentativas de captcha inválido. Tente novamente mais tarde." });
+    return res.status(429).json({
+      error:
+        "Muitas tentativas de captcha inválido. Tente novamente mais tarde.",
+    });
   }
 
   if (!captchaData.success) {
@@ -67,7 +75,8 @@ export default async function handler(req, res) {
     await redis.del(invalidCaptchaKey);
   }
 
-  const cacheKey = `cnpj:${cnpj}`;
+  const cnpjNumerico = cnpj.replace(/[^\d]+/g, "");
+  const cacheKey = `cnpj:${cnpjNumerico}`;
   let cached = null;
   try {
     cached = await redis.get(cacheKey);
@@ -79,7 +88,10 @@ export default async function handler(req, res) {
 
   try {
     const cnpja = new CnpjaOpen();
-    const office = await withTimeout(cnpja.office.read({ taxId: cnpj }), 5000);
+    const office = await withTimeout(
+      cnpja.office.read({ taxId: cnpjNumerico }),
+      5000
+    );
     if (!office) return res.status(404).json({ error: "CNPJ não encontrado" });
 
     await redis.set(cacheKey, JSON.stringify(office), "EX", 3600);
