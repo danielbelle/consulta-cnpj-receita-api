@@ -1,112 +1,167 @@
-# Documentação do Projeto - Consulta de CNPJ na Receita Federal
+# Consulta CNPJ - Receita Federal
 
-## 📋 Visão Geral
+## 📖 Resumo
 
-API para consulta de CNPJs com integração aos dados da Receita Federal,
-desenvolvida em Next.js, Node.js e Tailwind CSS, com deploy gratuito.
+Este projeto é uma aplicação fullstack desenvolvida em **Next.js** que permite
+consultar informações de CNPJ diretamente da Receita Federal, com validação
+robusta, proteção contra abusos e interface responsiva. O sistema utiliza cache
+em Redis para otimizar consultas e integrações modernas para segurança e
+experiência do usuário.
+
+---
+
+## 🚀 Demonstração
+
+Acesse a versão online:  
+[https://consulta-cnpj-receita-api.vercel.app/](https://consulta-cnpj-receita-api.vercel.app/)
+
+---
+
+## 📝 Funcionalidades
+
+- Consulta de CNPJ com máscara e validação em tempo real
+- Validação de CNPJ no frontend e backend usando **Yup**
+- Integração com a API da Receita Federal via SDK
+- Cache de resultados em **Redis** (Upstash)
+- Proteção contra abuso: **Rate limiting** e **Google reCAPTCHA**
+- Interface responsiva com **Tailwind CSS** e suporte a tema claro/escuro
+- Headers de segurança HTTP configurados
+- Código organizado e pronto para produção
+
+---
 
 ## 🛠 Tecnologias Utilizadas
 
-- **Frontend**: Next.js, Tailwind CSS, React Query
-- **Backend**: Next.js API Routes, Node.js
-- **Banco de Dados**: \_database(definir)
-- **Cache**: Redis (Upstash)
-- **Validação**: Zod
-- **Deploy**: Vercel (frontend e API), \_definir (backend)
+- **Frontend:** Next.js, React, Tailwind CSS, React Hook Form, next-themes
+- **Backend:** Next.js API Routes, Node.js
+- **Validação:** Yup
+- **Cache:** Redis (Upstash)
+- **Segurança:** Google reCAPTCHA, CORS, Rate Limiting, HTTP Security Headers
+- **Outros:** @cnpja/sdk, SWR, Axios, Cheerio
 
-## 🚀 Passo a Passo para Implementação
+---
 
-### 1. Configuração Inicial do Projeto
+## 📦 Como Clonar e Rodar Localmente
+
+### 1. Clone o repositório
 
 ```bash
-# Criar projeto Next.js
-npx create-next-app@latest cnpj-consulta
-
-# Instalar dependências principais
-cd cnpj-consulta
-npm install axios cheerio @upstash/redis swr zod
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init
+git clone https://github.com/seu-usuario/consulta-receita.git
+cd consulta-receita
 ```
 
-### 2. Estrutura de Arquivos
+### 2. Instale as dependências
 
-```
-consulta-receita/
-├── public/
-├── src/
-│   └── app/
-│       ├── components/
-│       │   ├── ui/                # Componentes reutilizáveis (botões, inputs, etc)
-│       │   ├── ConsultaForm.jsx   # Formulário para digitar o CNPJ
-│       │   └── ResultadoView.jsx  # Exibição dos dados retornados
-│       ├── pages/
-│       │   └── api/
-│       │       ├── consulta.js    # Endpoint para consultar CNPJ
-│       │       └── historico.js   # Endpoint para histórico de consultas
-│       ├── types/
-│       │    └── cnpj.js            # Validação
-│       │
-│       ├── favicon.ico
-│       ├── globals.css
-│       ├── layout.js
-│       └── page.js
-├── .env
-├── .gitignore
-├── jsconfig.json
-├── next.config.mjs
-├── package.json
-├── postcss.config.mjs
-├── README.md
-└── eslint.config.mjs
+```bash
+npm install
 ```
 
-### 3. Implementação do Backend
+### 3. Configure as variáveis de ambiente
 
-#### 3.1. Configurar cliente Redis
-
-#### 3.2. Criar endpoint de consulta
-
-### 4. Implementação do Frontend
-
-#### 4.1. Página principal
-
-### 5. Configuração para Deploy
-
-#### 5.1. Variáveis de ambiente
+Crie um arquivo `.env` na raiz do projeto com o seguinte conteúdo (ajuste os
+valores conforme necessário):
 
 ```env
-# .env
-UPSTASH_REDIS_REST_URL=
-UPSTASH_REDIS_REST_TOKEN=
-RECEITA_FEDERAL_API_KEY=
+NODE_ENV="development"
+REDIS_URL="sua_url_do_redis"
+CNPJA_API_TOKEN="sua_api_key_cnpja"
+SITE_KEY="sua_site_key_recaptcha"
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY="sua_site_key_recaptcha"
+RECAPTCHA_SECRET="seu_secret_recaptcha"
 ```
 
-#### 5.2. Configuração do Vercel
+> **Dica:** Para testes locais, você pode usar o Redis gratuito do Upstash e
+> criar uma conta no Google reCAPTCHA.
 
-1. Criar conta na Vercel
-2. Conectar repositório Git
-3. Adicionar variáveis de ambiente no painel
-4. Configurar como projeto Next.js
+### 4. Rode o projeto em modo desenvolvimento
 
-### 6. Funcionalidades Adicionais (Roadmap)
+```bash
+npm run dev
+```
 
-| Prioridade | Feature                | Descrição                          |
-| ---------- | ---------------------- | ---------------------------------- |
-| P1         | Histórico de consultas | Salvar consultas recentes          |
-| P1         | Validação de CNPJ      | Validar formato antes de consultar |
-| P2         | Autenticação           | Salvar histórico por usuário       |
-| P2         | Exportar PDF           | Gerar relatório em PDF             |
-| P3         | API pública            | Oferecer endpoint para devs        |
+Acesse [http://localhost:3000](http://localhost:3000) no navegador.
 
-## 📌 Considerações Importantes
+---
 
-1. **Legalidade**: Verificar os termos de serviço da Receita Federal
-2. **Rate Limiting**: Implementar limite de consultas por usuário
-3. **Cache**: Utilizar Redis para reduzir requisições à fonte
-4. **LGPD**: Não armazenar dados sensíveis sem necessidade
+## 📂 Estrutura de Pastas
+
+```
+src/
+  app/
+    forms/           # Formulários e validação
+    landing/         # Texto e landing page
+    results/         # Exibição dos resultados
+    types/           # Validação de CNPJ
+    globals.css      # Estilos globais
+    layout.js        # Layout principal
+    page.jsx         # Página principal
+  components/        # Componentes reutilizáveis (UI, máscara, tema)
+  lib/               # Utilitários e integração com Redis
+  pages/
+    api/
+      consultarCNPJ.js # Endpoint de consulta de CNPJ
+  _middleware.js     # Middleware de CORS
+```
+
+---
+
+## 📚 Principais Bibliotecas
+
+- **[Next.js](https://nextjs.org/):** Framework React para SSR/SSG
+- **[React Hook Form](https://react-hook-form.com/):** Gerenciamento de
+  formulários
+- **[Yup](https://github.com/jquense/yup):** Validação de schemas
+- **[@cnpja/sdk](https://www.npmjs.com/package/@cnpja/sdk):** Consulta de CNPJ
+- **[Redis (ioredis)](https://github.com/luin/ioredis):** Cache de resultados
+- **[Tailwind CSS](https://tailwindcss.com/):** Estilização utilitária
+- **[next-themes](https://github.com/pacocoursey/next-themes):** Suporte a tema
+  escuro/claro
+- **[Google reCAPTCHA](https://www.google.com/recaptcha/about/):** Proteção
+  contra bots
+- **[CORS](https://www.npmjs.com/package/cors):** Segurança de origem
+- **[SWR](https://swr.vercel.app/):** Fetching e cache de dados (opcional)
+
+---
+
+## 🔒 Segurança
+
+- **Validação de entrada** no frontend e backend
+- **Rate limiting** por IP usando Redis
+- **Proteção contra bots** com Google reCAPTCHA
+- **Headers de segurança** configurados via Next.js
+- **CORS restrito** para domínios confiáveis
+- **Timeout** em consultas externas para evitar travamentos
+
+---
+
+## 🧑‍💻 Como Contribuir
+
+1. Faça um fork do projeto
+2. Crie uma branch: `git checkout -b minha-feature`
+3. Commit suas alterações: `git commit -m 'feat: minha nova feature'`
+4. Push para o seu fork: `git push origin minha-feature`
+5. Abra um Pull Request
+
+---
+
+## 📌 Observações Importantes
+
+- **Legalidade:** Consulte os termos de uso da Receita Federal e planos da cnpja
+  antes de uso em produção.
+- **LGPD:** Não armazene dados sensíveis sem consentimento.
+- **Limite de uso:** O sistema possui proteção contra abuso, mas monitore sempre
+  o uso em produção, limite de 5 consultas por minuto.
+
+---
 
 ## 📄 Licença
 
 Este projeto está sob a licença MIT. Consulte o arquivo LICENSE para mais
 detalhes.
+
+---
+
+## ✉️ Contato
+
+Dúvidas, sugestões ou feedback?  
+Abra uma issue ou envie um e-mail para henrique.danielb@gmail.com
